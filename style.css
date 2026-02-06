@@ -552,10 +552,7 @@ input:focus {
         grid-area: weight;
     }
 
-    .cat-weight::placeholder {
-        content: "Bobot %";
-        /* Note: standard placeholder attr handles text, this logic is just layout */
-    }
+    /* Deleted placeholder override to use HTML attribute instead */
 
     .cat-score {
         grid-area: score;
