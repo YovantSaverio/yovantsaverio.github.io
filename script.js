@@ -1,688 +1,621 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- Constants & Config ---
-    const STORAGE_KEY = 'kalkulator_ips_v2_data';
-    const GRADE_SCALE = [
-        { min: 80, grade: 'A', point: 4.0 },
-        { min: 75, grade: 'B+', point: 3.5 },
-        { min: 65, grade: 'B', point: 3.0 },
-        { min: 60, grade: 'C+', point: 2.5 },
-        { min: 55, grade: 'C', point: 2.0 },
-        { min: 40, grade: 'D', point: 1.0 },
-        { min: 0, grade: 'E', point: 0.0 }
-    ];
+/* Inherit most variables from V1 idea, but defined here for standalone V2 */
+:root {
+    --bg-color: #0f172a;
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --accent: #8b5cf6;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border: rgba(148, 163, 184, 0.1);
+    --success: #10b981;
+    --danger: #ef4444;
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --radius-lg: 16px;
+    --radius-md: 8px;
+}
 
-    // --- State Management ---document.addEventListener('DOMContentLoaded', () => {
-    // --- Constants & Config ---
-    const STORAGE_KEY = 'kalkulator_ips_v2_data';
-    const GRADE_SCALE = [
-        { min: 80, grade: 'A', point: 4.0 },
-        { min: 75, grade: 'B+', point: 3.5 },
-        { min: 65, grade: 'B', point: 3.0 },
-        { min: 60, grade: 'C+', point: 2.5 },
-        { min: 55, grade: 'C', point: 2.0 },
-        { min: 40, grade: 'D', point: 1.0 },
-        { min: 0, grade: 'E', point: 0.0 }
-    ];
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    // --- State Management ---
-    let appData = {
-        activeProfileId: 'default',
-        profiles: {
-            'default': {
-                id: 'default',
-                name: 'IPS Saya',
-                courses: []
-            }
-        }
-    };
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
 
-    // --- DOM Elements ---
-    const courseListEl = document.getElementById('course-list');
-    const addCourseBtn = document.getElementById('add-course-btn');
-    const totalSksEl = document.getElementById('total-sks');
-    const finalIpsEl = document.getElementById('final-ips');
-    const emptyStateEl = document.getElementById('empty-state');
+.background-blobs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background:
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
+}
 
-    // Profile Elements
-    const profileSelect = document.getElementById('profile-select');
-    const btnAddProfile = document.getElementById('btn-add-profile');
-    const btnDeleteProfile = document.getElementById('btn-delete-profile');
+.app-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 120px;
+}
 
-    // Templates
-    const courseTemplate = document.getElementById('course-template');
-    const categoryTemplate = document.getElementById('category-template');
+/* --- V2 Specific: Profile Manager --- */
+.profile-manager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 20px;
+    border-radius: 50px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--border);
+}
 
-    // --- Helper Logic ---
-    function roundScore(score) {
-        return Math.round(score);
+.profile-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.profile-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#profile-select {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-family: inherit;
+    outline: none;
+}
+
+#profile-select:focus {
+    border-color: var(--primary);
+}
+
+#btn-add-profile,
+#btn-delete-profile {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+#btn-add-profile:hover {
+    color: var(--success);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+#btn-delete-profile:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: var(--text-muted);
+}
+
+/* Course Card */
+.course-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+    box-shadow: var(--glass-shadow);
+}
+
+.course-header {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.course-name-group {
+    flex: 1;
+}
+
+.sks-group {
+    width: 80px;
+}
+
+label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.course-name {
+    font-weight: 600;
+    width: 100%;
+}
+
+.course-sks {
+    text-align: center;
+}
+
+.btn-delete-course {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+    height: 42px;
+}
+
+.btn-delete-course:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Categories Section */
+.categories-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 40px;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.category-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 40px;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.btn-delete-cat {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.btn-delete-cat:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.categories-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.btn-add-category {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed var(--border);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-add-category:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-muted);
+}
+
+.total-weight-display {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.weight-val.error {
+    color: var(--danger);
+    font-weight: bold;
+}
+
+.weight-val.valid {
+    color: var(--success);
+    font-weight: bold;
+}
+
+/* Grade Preview Footer */
+.course-footer {
+    background: rgba(15, 23, 42, 0.4);
+    margin: 0 -24px -24px -24px;
+    padding: 16px 24px;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-top: 1px solid var(--border);
+}
+
+.grade-preview {
+    display: flex;
+    justify-content: flex-end;
+    gap: 32px;
+}
+
+.grade-detail {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.grade-detail .label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.grade-detail .val {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.grade-detail .val.highlight {
+    color: var(--accent);
+}
+
+/* Actions Area */
+.actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+    margin-bottom: 48px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.6);
+}
+
+/* Result Summary */
+.summary-card {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    padding: 16px 32px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    width: 90%;
+    max-width: 600px;
+    justify-content: center;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.summary-item .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.summary-item .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.summary-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+}
+
+#final-ips {
+    font-size: 2rem;
+    background: linear-gradient(135deg, var(--success) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
 
-    function getGradeFromScore(score) {
-        const rounded = roundScore(score);
-        for (const scale of GRADE_SCALE) {
-            if (rounded >= scale.min) {
-                return { grade: scale.grade, point: scale.point, roundedScore: rounded };
-            }
-        }
-        return { grade: 'E', point: 0.0, roundedScore: rounded };
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.slide-in {
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+        padding-bottom: 140px;
+        /* Extra space for fixed summary */
     }
 
-    function generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    .app-container {
+        padding-bottom: 0;
     }
 
-    // --- Persistence Functions ---
-    function loadData() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                appData = JSON.parse(saved);
-                // Ensure default structure integrity just in case
-                if (!appData.profiles || !appData.activeProfileId) throw new Error("Corrupt Data");
-            } catch (e) {
-                console.error("Failed to load data, resetting", e);
-                // Fallback to default state is already set
-            }
-        }
-        renderProfileList();
-        renderCourses();
+    header {
+        margin-bottom: 24px;
     }
 
-    function saveData() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        calculateTotalIPS(); // Re-calculate summary whenever data saves (state changes)
+    header h1 {
+        font-size: 1.8rem;
     }
 
-    // --- Profile Management ---
-    function getActiveProfile() {
-        return appData.profiles[appData.activeProfileId];
+    /* Profile Manager Stack */
+    .profile-manager {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 12px;
+        border-radius: var(--radius-lg);
     }
 
-    function renderProfileList() {
-        profileSelect.innerHTML = '';
-        Object.values(appData.profiles).forEach(profile => {
-            const option = document.createElement('option');
-            option.value = profile.id;
-            option.textContent = profile.name;
-            if (profile.id === appData.activeProfileId) option.selected = true;
-            profileSelect.appendChild(option);
-        });
+    .profile-selector {
+        width: 100%;
+        justify-content: space-between;
     }
 
-    function switchProfile(profileId) {
-        if (appData.profiles[profileId]) {
-            appData.activeProfileId = profileId;
-            saveData();
-            renderProfileList(); // update selected attr
-            renderCourses();
-        }
+    #profile-select {
+        flex: 1;
     }
 
-    function createNewProfile() {
-        const name = prompt("Masukkan nama profil baru (Contoh: Semester 4, atau Nama Teman):");
-        if (name && name.trim() !== "") {
-            const newId = generateId();
-            appData.profiles[newId] = {
-                id: newId,
-                name: name.trim(),
-                courses: []
-            };
-            switchProfile(newId);
-        }
+    /* Course Card Mobile Layout */
+    .course-card {
+        padding: 16px;
     }
 
-    function deleteCurrentProfile() {
-        const profileCount = Object.keys(appData.profiles).length;
-        if (profileCount <= 1) {
-            alert("Tidak bisa menghapus satu-satunya profil.");
-            return;
-        }
-
-        if (confirm(`Yakin ingin menghapus profil "${getActiveProfile().name}"? Data akan hilang selamanya.`)) {
-            const idToDelete = appData.activeProfileId;
-            delete appData.profiles[idToDelete];
-            // Switch to first available
-            const firstId = Object.keys(appData.profiles)[0];
-            switchProfile(firstId);
-        }
+    .course-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
 
-    // --- Course & Category Management (State + DOM) ---
-
-    // Note: We render directly from state.
-    // However, to keep input focus alive and avoid full re-renders on every keystroke,
-    // we use a hybrid approach:
-    // 1. Initial Render: Build DOM from State.
-    // 2. Events: Update State -> Save [-> No full Re-render of strict inputs, just calc].
-
-    function renderCourses() {
-        courseListEl.innerHTML = '';
-        const profile = getActiveProfile();
-
-        if (profile.courses.length === 0) {
-            emptyStateEl.style.display = 'block';
-        } else {
-            emptyStateEl.style.display = 'none';
-            profile.courses.forEach(course => {
-                const courseEl = buildCourseElement(course);
-                courseListEl.appendChild(courseEl);
-                // Trigger an initial calculation for this card to update UI numbers
-                updateCourseCardUI(course, courseEl);
-            });
-        }
-        calculateTotalIPS();
+    .input-group,
+    .course-name-group,
+    .sks-group {
+        width: 100%;
     }
 
-    function addCourse() {
-        const profile = getActiveProfile();
-        const newCourse = {
-            id: generateId(),
-            name: '',
-            sks: 3,
-            categories: [
-                // Default empty category
-                { id: generateId(), name: '', weight: 0, score: 0 }
-            ]
-        };
-        profile.courses.push(newCourse);
-        saveData();
-        renderCourses();
+    .course-header .btn-delete-course {
+        align-self: flex-end;
+        margin-top: -10px;
+        /* Pull it up a bit if desired, or keep standard */
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        width: 100%;
+        border-radius: var(--radius-md);
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
-    function deleteCourse(courseId) {
-        const profile = getActiveProfile();
-        profile.courses = profile.courses.filter(c => c.id !== courseId);
-        saveData();
-        renderCourses();
+    /* Categories Mobile Layout - Stacked Card Style */
+    .categories-header {
+        display: none;
     }
 
-    // --- DOM Builders ---
-
-    function buildCourseElement(courseData) {
-        const clone = courseTemplate.content.cloneNode(true);
-        const card = clone.querySelector('.course-card');
-        card.dataset.id = courseData.id;
-
-        // Inputs
-        const nameInput = card.querySelector('.course-name');
-        nameInput.value = courseData.name;
-        nameInput.addEventListener('input', (e) => {
-            courseData.name = e.target.value;
-            saveData();
-        });
-
-        const sksInput = card.querySelector('.course-sks');
-        sksInput.value = courseData.sks;
-        sksInput.addEventListener('input', (e) => {
-            courseData.sks = parseInt(e.target.value) || 0;
-            saveData();
-            updateCourseCardUI(courseData, card);
-            calculateTotalIPS();
-        });
-
-        // Delete Course
-        const btnDel = card.querySelector('.btn-delete-course');
-        btnDel.addEventListener('click', () => deleteCourse(courseData.id));
-
-        // Categories List
-        const catList = card.querySelector('.categories-list');
-        courseData.categories.forEach(cat => {
-            catList.appendChild(buildCategoryElement(cat, courseData, card));
-        });
-
-        // Add Category Button
-        const btnAddCat = card.querySelector('.btn-add-category');
-        btnAddCat.addEventListener('click', () => {
-            const newCat = { id: generateId(), name: '', weight: 0, score: 0 };
-            courseData.categories.push(newCat);
-            saveData();
-            // Append directly to avoid full re-render
-            catList.appendChild(buildCategoryElement(newCat, courseData, card));
-            updateCourseCardUI(courseData, card);
-        });
-
-        return card;
+    .category-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 40px;
+        grid-template-areas:
+            "name name delete"
+            "weight score .";
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 10px;
+        border-radius: var(--radius-md);
+        margin-bottom: 8px;
+        border: 1px solid var(--border);
     }
 
-    function buildCategoryElement(catData, courseData, courseCard) {
-        const clone = categoryTemplate.content.cloneNode(true);
-        const row = clone.querySelector('.category-row');
-
-        const nameIn = row.querySelector('.cat-name');
-        nameIn.value = catData.name;
-        nameIn.addEventListener('input', (e) => {
-            catData.name = e.target.value;
-            saveData();
-        });
-
-        const weightIn = row.querySelector('.cat-weight');
-        weightIn.value = catData.weight > 0 ? catData.weight : ''; // empty if 0 for cleaner look
-        weightIn.addEventListener('input', (e) => {
-            catData.weight = parseFloat(e.target.value) || 0;
-            saveData();
-            updateCourseCardUI(courseData, courseCard);
-            calculateTotalIPS();
-        });
-
-        const scoreIn = row.querySelector('.cat-score');
-        scoreIn.value = catData.score > 0 ? catData.score : '';
-        scoreIn.addEventListener('input', (e) => {
-            catData.score = parseFloat(e.target.value) || 0;
-            saveData();
-            updateCourseCardUI(courseData, courseCard);
-            calculateTotalIPS();
-        });
-
-        const btnDel = row.querySelector('.btn-delete-cat');
-        btnDel.addEventListener('click', () => {
-            courseData.categories = courseData.categories.filter(c => c.id !== catData.id);
-            saveData();
-            row.remove();
-            updateCourseCardUI(courseData, courseCard);
-            calculateTotalIPS();
-        });
-
-        return row;
+    .cat-name {
+        grid-area: name;
+        width: 100%;
+        font-weight: 500;
     }
 
-    function updateCourseCardUI(courseData, cardEl) {
-        let totalWeight = 0;
-        let weightedScore = 0;
-
-        courseData.categories.forEach(cat => {
-            totalWeight += cat.weight;
-            weightedScore += (cat.score * cat.weight / 100);
-        });
-
-        // UI Updates
-        const weightDisplay = cardEl.querySelector('.weight-val');
-        weightDisplay.textContent = totalWeight;
-        if (totalWeight !== 100) {
-            weightDisplay.classList.add('error');
-            weightDisplay.classList.remove('valid');
-        } else {
-            weightDisplay.classList.remove('error');
-            weightDisplay.classList.add('valid');
-        }
-
-        const finalData = getGradeFromScore(weightedScore);
-
-        cardEl.querySelector('.course-final-score').textContent =
-            `${weightedScore.toFixed(2)} (${finalData.roundedScore})`;
-
-        cardEl.querySelector('.course-letter-grade').textContent =
-            `${finalData.grade} (${finalData.point})`;
-
-        // Store calculated point on the object temporarily for Total IPS calculation?
-        // Better to re-calculate from data to be safe. 
-        // We will do that in calculateTotalIPS using the data object directly.
+    .cat-weight,
+    .cat-score {
+        width: 100%;
     }
 
-    function calculateTotalIPS() {
-        const profile = getActiveProfile();
-        let totalSks = 0;
-        let totalWeightedPoints = 0;
-
-        profile.courses.forEach(course => {
-            // Need to recalc this course's specific point
-            let weightedScore = 0;
-            course.categories.forEach(cat => {
-                weightedScore += (cat.score * cat.weight / 100);
-            });
-            const finalData = getGradeFromScore(weightedScore);
-
-            // Only count if SKS > 0
-            if (course.sks > 0) {
-                totalSks += course.sks;
-                totalWeightedPoints += (finalData.point * course.sks);
-            }
-        });
-
-        totalSksEl.textContent = totalSks;
-        const ips = totalSks > 0 ? (totalWeightedPoints / totalSks) : 0;
-        finalIpsEl.textContent = ips.toFixed(2);
+    .cat-weight {
+        grid-area: weight;
     }
 
-    // --- Init Listeners ---
-    profileSelect.addEventListener('change', (e) => {
-        switchProfile(e.target.value);
-    });
+    /* Deleted placeholder override to use HTML attribute instead */
 
-    btnAddProfile.addEventListener('click', createNewProfile);
-    btnDeleteProfile.addEventListener('click', deleteCurrentProfile);
-    addCourseBtn.addEventListener('click', addCourse);
-
-    // Boot
-    loadData();
-});
-
-    let appData = {
-        activeProfileId: 'default',
-        profiles: {
-            'default': {
-                id: 'default',
-                name: 'IPS Saya',
-                courses: []
-            }
-        }
-    };
-
-    // --- DOM Elements ---
-    const courseListEl = document.getElementById('course-list');
-    const addCourseBtn = document.getElementById('add-course-btn');
-    const totalSksEl = document.getElementById('total-sks');
-    const finalIpsEl = document.getElementById('final-ips');
-    const emptyStateEl = document.getElementById('empty-state');
-
-    // Profile Elements
-    const profileSelect = document.getElementById('profile-select');
-    const btnAddProfile = document.getElementById('btn-add-profile');
-    const btnDeleteProfile = document.getElementById('btn-delete-profile');
-
-    // Templates
-    const courseTemplate = document.getElementById('course-template');
-    const categoryTemplate = document.getElementById('category-template');
-
-    // --- Helper Logic ---
-    function roundScore(score) {
-        return Math.round(score);
+    .cat-score {
+        grid-area: score;
     }
 
-    function getGradeFromScore(score) {
-        const rounded = roundScore(score);
-        for (const scale of GRADE_SCALE) {
-            if (rounded >= scale.min) {
-                return { grade: scale.grade, point: scale.point, roundedScore: rounded };
-            }
-        }
-        return { grade: 'E', point: 0.0, roundedScore: rounded };
+    .btn-delete-cat {
+        grid-area: delete;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-md);
     }
 
-    function generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    /* Footer & Summary */
+    .course-footer {
+        flex-direction: column;
+        gap: 12px;
+        margin: 0 -16px -16px -16px;
+        padding: 16px;
     }
 
-    // --- Persistence Functions ---
-    function loadData() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                appData = JSON.parse(saved);
-                // Ensure default structure integrity just in case
-                if (!appData.profiles || !appData.activeProfileId) throw new Error("Corrupt Data");
-            } catch (e) {
-                console.error("Failed to load data, resetting", e);
-                // Fallback to default state is already set
-            }
-        }
-        renderProfileList();
-        renderCourses();
+    .grade-preview {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
     }
 
-    function saveData() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        calculateTotalIPS(); // Re-calculate summary whenever data saves (state changes)
+    .grade-preview .grade-detail {
+        width: 100%;
+        justify-content: space-between;
     }
 
-    // --- Profile Management ---
-    function getActiveProfile() {
-        return appData.profiles[appData.activeProfileId];
+    .summary-card {
+        width: calc(100% - 20px);
+        padding: 16px;
+        border-radius: 20px;
+        bottom: 15px;
+        gap: 16px;
+        flex-direction: row;
+        /* Keep row but condense */
+        justify-content: space-between;
     }
 
-    function renderProfileList() {
-        profileSelect.innerHTML = '';
-        Object.values(appData.profiles).forEach(profile => {
-            const option = document.createElement('option');
-            option.value = profile.id;
-            option.textContent = profile.name;
-            if (profile.id === appData.activeProfileId) option.selected = true;
-            profileSelect.appendChild(option);
-        });
+    .summary-divider {
+        display: none;
     }
 
-    function switchProfile(profileId) {
-        if (appData.profiles[profileId]) {
-            appData.activeProfileId = profileId;
-            saveData();
-            renderProfileList(); // update selected attr
-            renderCourses();
-        }
+    .summary-item {
+        align-items: flex-start;
     }
 
-    function createNewProfile() {
-        const name = prompt("Masukkan nama profil baru (Contoh: Semester 4, atau Nama Teman):");
-        if (name && name.trim() !== "") {
-            const newId = generateId();
-            appData.profiles[newId] = {
-                id: newId,
-                name: name.trim(),
-                courses: []
-            };
-            switchProfile(newId);
-        }
+    .summary-item.main-result {
+        align-items: flex-end;
     }
 
-    function deleteCurrentProfile() {
-        const profileCount = Object.keys(appData.profiles).length;
-        if (profileCount <= 1) {
-            alert("Tidak bisa menghapus satu-satunya profil.");
-            return;
-        }
-
-        if (confirm(`Yakin ingin menghapus profil "${getActiveProfile().name}"? Data akan hilang selamanya.`)) {
-            const idToDelete = appData.activeProfileId;
-            delete appData.profiles[idToDelete];
-            // Switch to first available
-            const firstId = Object.keys(appData.profiles)[0];
-            switchProfile(firstId);
-        }
+    .summary-item .label {
+        font-size: 0.65rem;
     }
 
-    // --- Course & Category Management (State + DOM) ---
-
-    // Note: We render directly from state.
-    // However, to keep input focus alive and avoid full re-renders on every keystroke,
-    // we use a hybrid approach:
-    // 1. Initial Render: Build DOM from State.
-    // 2. Events: Update State -> Save [-> No full Re-render of strict inputs, just calc].
-
-    function renderCourses() {
-        courseListEl.innerHTML = '';
-        const profile = getActiveProfile();
-
-        if (profile.courses.length === 0) {
-            emptyStateEl.style.display = 'block';
-        } else {
-            emptyStateEl.style.display = 'none';
-            profile.courses.forEach(course => {
-                const courseEl = buildCourseElement(course);
-                courseListEl.appendChild(courseEl);
-                // Trigger an initial calculation for this card to update UI numbers
-                updateCourseCardUI(course, courseEl);
-            });
-        }
-        calculateTotalIPS();
+    .summary-item .value {
+        font-size: 1.25rem;
     }
 
-    function addCourse() {
-        const profile = getActiveProfile();
-        const newCourse = {
-            id: generateId(),
-            name: '',
-            sks: 3,
-            categories: [
-                // Default empty category
-                { id: generateId(), name: '', weight: 0, score: 0 }
-            ]
-        };
-        profile.courses.push(newCourse);
-        saveData();
-        renderCourses();
+    #final-ips {
+        font-size: 1.75rem;
     }
-
-    function deleteCourse(courseId) {
-        const profile = getActiveProfile();
-        profile.courses = profile.courses.filter(c => c.id !== courseId);
-        saveData();
-        renderCourses();
-    }
-
-    // --- DOM Builders ---
-
-    function buildCourseElement(courseData) {
-        const clone = courseTemplate.content.cloneNode(true);
-        const card = clone.querySelector('.course-card');
-        card.dataset.id = courseData.id;
-
-        // Inputs
-        const nameInput = card.querySelector('.course-name');
-        nameInput.value = courseData.name;
-        nameInput.addEventListener('input', (e) => {
-            courseData.name = e.target.value;
-            saveData();
-        });
-
-        const sksInput = card.querySelector('.course-sks');
-        sksInput.value = courseData.sks;
-        sksInput.addEventListener('input', (e) => {
-            courseData.sks = parseInt(e.target.value) || 0;
-            saveData();
-            updateCourseCardUI(courseData, card);
-            calculateTotalIPS();
-        });
-
-        // Delete Course
-        const btnDel = card.querySelector('.btn-delete-course');
-        btnDel.addEventListener('click', () => deleteCourse(courseData.id));
-
-        // Categories List
-        const catList = card.querySelector('.categories-list');
-        courseData.categories.forEach(cat => {
-            catList.appendChild(buildCategoryElement(cat, courseData, card));
-        });
-
-        // Add Category Button
-        const btnAddCat = card.querySelector('.btn-add-category');
-        btnAddCat.addEventListener('click', () => {
-            const newCat = { id: generateId(), name: '', weight: 0, score: 0 };
-            courseData.categories.push(newCat);
-            saveData();
-            // Append directly to avoid full re-render
-            catList.appendChild(buildCategoryElement(newCat, courseData, card));
-            updateCourseCardUI(courseData, card);
-        });
-
-        return card;
-    }
-
-    function buildCategoryElement(catData, courseData, courseCard) {
-        const clone = categoryTemplate.content.cloneNode(true);
-        const row = clone.querySelector('.category-row');
-
-        const nameIn = row.querySelector('.cat-name');
-        nameIn.value = catData.name;
-        nameIn.addEventListener('input', (e) => {
-            catData.name = e.target.value;
-            saveData();
-        });
-
-        const weightIn = row.querySelector('.cat-weight');
-        weightIn.value = catData.weight > 0 ? catData.weight : ''; // empty if 0 for cleaner look
-        weightIn.addEventListener('input', (e) => {
-            catData.weight = parseFloat(e.target.value) || 0;
-            saveData();
-            updateCourseCardUI(courseData, courseCard);
-            calculateTotalIPS();
-        });
-
-        const scoreIn = row.querySelector('.cat-score');
-        scoreIn.value = catData.score > 0 ? catData.score : '';
-        scoreIn.addEventListener('input', (e) => {
-            catData.score = parseFloat(e.target.value) || 0;
-            saveData();
-            updateCourseCardUI(courseData, courseCard);
-            calculateTotalIPS();
-        });
-
-        const btnDel = row.querySelector('.btn-delete-cat');
-        btnDel.addEventListener('click', () => {
-            courseData.categories = courseData.categories.filter(c => c.id !== catData.id);
-            saveData();
-            row.remove();
-            updateCourseCardUI(courseData, courseCard);
-            calculateTotalIPS();
-        });
-
-        return row;
-    }
-
-    function updateCourseCardUI(courseData, cardEl) {
-        let totalWeight = 0;
-        let weightedScore = 0;
-
-        courseData.categories.forEach(cat => {
-            totalWeight += cat.weight;
-            weightedScore += (cat.score * cat.weight / 100);
-        });
-
-        // UI Updates
-        const weightDisplay = cardEl.querySelector('.weight-val');
-        weightDisplay.textContent = totalWeight;
-        if (totalWeight !== 100) {
-            weightDisplay.classList.add('error');
-            weightDisplay.classList.remove('valid');
-        } else {
-            weightDisplay.classList.remove('error');
-            weightDisplay.classList.add('valid');
-        }
-
-        const finalData = getGradeFromScore(weightedScore);
-
-        cardEl.querySelector('.course-final-score').textContent =
-            `${weightedScore.toFixed(2)} (${finalData.roundedScore})`;
-
-        cardEl.querySelector('.course-letter-grade').textContent =
-            `${finalData.grade} (${finalData.point})`;
-
-        // Store calculated point on the object temporarily for Total IPS calculation?
-        // Better to re-calculate from data to be safe. 
-        // We will do that in calculateTotalIPS using the data object directly.
-    }
-
-    function calculateTotalIPS() {
-        const profile = getActiveProfile();
-        let totalSks = 0;
-        let totalWeightedPoints = 0;
-
-        profile.courses.forEach(course => {
-            // Need to recalc this course's specific point
-            let weightedScore = 0;
-            course.categories.forEach(cat => {
-                weightedScore += (cat.score * cat.weight / 100);
-            });
-            const finalData = getGradeFromScore(weightedScore);
-
-            // Only count if SKS > 0
-            if (course.sks > 0) {
-                totalSks += course.sks;
-                totalWeightedPoints += (finalData.point * course.sks);
-            }
-        });
-
-        totalSksEl.textContent = totalSks;
-        const ips = totalSks > 0 ? (totalWeightedPoints / totalSks) : 0;
-        finalIpsEl.textContent = ips.toFixed(2);
-    }
-
-    // --- Init Listeners ---
-    profileSelect.addEventListener('change', (e) => {
-        switchProfile(e.target.value);
-    });
-
-    btnAddProfile.addEventListener('click', createNewProfile);
-    btnDeleteProfile.addEventListener('click', deleteCurrentProfile);
-    addCourseBtn.addEventListener('click', addCourse);
-
-    // Boot
-    loadData();
-});
+}
