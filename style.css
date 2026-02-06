@@ -457,11 +457,11 @@ input:focus {
 }
 
 /* Mobile Responsive */
+/* Mobile Responsive */
 @media (max-width: 600px) {
     body {
         padding: 10px;
         padding-bottom: 140px;
-        /* Extra space for fixed summary */
     }
 
     .app-container {
@@ -476,7 +476,6 @@ input:focus {
         font-size: 1.8rem;
     }
 
-    /* Profile Manager Stack */
     .profile-manager {
         width: 100%;
         flex-direction: column;
@@ -495,7 +494,6 @@ input:focus {
         flex: 1;
     }
 
-    /* Course Card Mobile Layout */
     .course-card {
         padding: 16px;
     }
@@ -515,7 +513,6 @@ input:focus {
     .course-header .btn-delete-course {
         align-self: flex-end;
         margin-top: -10px;
-        /* Pull it up a bit if desired, or keep standard */
         background: rgba(239, 68, 68, 0.1);
         color: var(--danger);
         width: 100%;
@@ -525,9 +522,9 @@ input:focus {
         align-items: center;
     }
 
-    /* Categories Mobile Layout - Stacked Card Style */
+    /* Hide desktop headers on mobile */
     .categories-header {
-        display: none;
+        display: none !important;
     }
 
     .category-row {
@@ -543,9 +540,9 @@ input:focus {
         margin-bottom: 12px;
         border: 1px solid var(--border);
         align-items: end;
-        /* Align delete button to bottom of first row? or stretch */
     }
 
+    /* Show mobile labels on mobile */
     .mobile-label {
         display: block;
         font-size: 0.75rem;
@@ -577,16 +574,12 @@ input:focus {
     .btn-delete-cat {
         grid-area: delete;
         height: 42px;
-        /* Fixed height to match inputs approx */
         align-self: end;
-        /* Push to bottom of the row to align with input */
         margin-bottom: 2px;
-        /* Adjustment */
         background: rgba(255, 255, 255, 0.05);
         border-radius: var(--radius-md);
     }
 
-    /* Footer & Summary */
     .course-footer {
         flex-direction: column;
         gap: 12px;
@@ -612,7 +605,6 @@ input:focus {
         bottom: 15px;
         gap: 16px;
         flex-direction: row;
-        /* Keep row but condense */
         justify-content: space-between;
     }
 
