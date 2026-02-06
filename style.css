@@ -451,40 +451,174 @@ input:focus {
 
 /* Mobile Responsive */
 @media (max-width: 600px) {
+    body {
+        padding: 10px;
+        padding-bottom: 140px;
+        /* Extra space for fixed summary */
+    }
+
+    .app-container {
+        padding-bottom: 0;
+    }
+
+    header {
+        margin-bottom: 24px;
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    /* Profile Manager Stack */
+    .profile-manager {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 12px;
+        border-radius: var(--radius-lg);
+    }
+
+    .profile-selector {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    #profile-select {
+        flex: 1;
+    }
+
+    /* Course Card Mobile Layout */
+    .course-card {
+        padding: 16px;
+    }
+
+    .course-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .input-group,
+    .course-name-group,
+    .sks-group {
+        width: 100%;
+    }
+
+    .course-header .btn-delete-course {
+        align-self: flex-end;
+        margin-top: -10px;
+        /* Pull it up a bit if desired, or keep standard */
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        width: 100%;
+        border-radius: var(--radius-md);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Categories Mobile Layout - Stacked Card Style */
     .categories-header {
         display: none;
     }
 
     .category-row {
-        grid-template-columns: 1fr 80px 80px 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 40px;
+        grid-template-areas:
+            "name name delete"
+            "weight score .";
         gap: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 10px;
+        border-radius: var(--radius-md);
+        margin-bottom: 8px;
+        border: 1px solid var(--border);
+    }
+
+    .cat-name {
+        grid-area: name;
+        width: 100%;
+        font-weight: 500;
+    }
+
+    .cat-weight,
+    .cat-score {
+        width: 100%;
+    }
+
+    .cat-weight {
+        grid-area: weight;
+    }
+
+    .cat-weight::placeholder {
+        content: "Bobot %";
+        /* Note: standard placeholder attr handles text, this logic is just layout */
+    }
+
+    .cat-score {
+        grid-area: score;
+    }
+
+    .btn-delete-cat {
+        grid-area: delete;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-md);
+    }
+
+    /* Footer & Summary */
+    .course-footer {
+        flex-direction: column;
+        gap: 12px;
+        margin: 0 -16px -16px -16px;
+        padding: 16px;
     }
 
     .grade-preview {
         flex-direction: column;
         gap: 8px;
-        align-items: flex-end;
+        align-items: flex-start;
     }
 
-    .summary-card {
-        border-radius: var(--radius-lg);
-        flex-direction: column;
-        gap: 16px;
-        padding: 20px;
-    }
-
-    .summary-divider {
-        width: 100%;
-        height: 1px;
-    }
-
-    .profile-manager {
+    .grade-preview .grade-detail {
         width: 100%;
         justify-content: space-between;
     }
 
-    .profile-selector {
-        flex: 1;
-        justify-content: flex-end;
+    .summary-card {
+        width: calc(100% - 20px);
+        padding: 16px;
+        border-radius: 20px;
+        bottom: 15px;
+        gap: 16px;
+        flex-direction: row;
+        /* Keep row but condense */
+        justify-content: space-between;
+    }
+
+    .summary-divider {
+        display: none;
+    }
+
+    .summary-item {
+        align-items: flex-start;
+    }
+
+    .summary-item.main-result {
+        align-items: flex-end;
+    }
+
+    .summary-item .label {
+        font-size: 0.65rem;
+    }
+
+    .summary-item .value {
+        font-size: 1.25rem;
+    }
+
+    #final-ips {
+        font-size: 1.75rem;
     }
 }
