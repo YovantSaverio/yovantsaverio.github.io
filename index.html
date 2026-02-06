@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator IPS Premium (V2)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-blobs"></div>
+    <div class="app-container">
+        <header>
+            <div class="profile-manager">
+                <div class="profile-label">Profil Aktif:</div>
+                <div class="profile-selector">
+                    <select id="profile-select">
+                        <!-- Profiles loaded here -->
+                    </select>
+                    <button id="btn-add-profile" title="Buat Profil Baru">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                    <button id="btn-delete-profile" title="Hapus Profil Saat Ini">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <h1>Kalkulator Indeks Prestasi Semester <span class="badge-v2">V2</span></h1>
+        </header>
+
+        <main id="course-list">
+            <!-- Courses will be added here dynamically -->
+        </main>
+
+        <div class="empty-state" id="empty-state" style="display: none;">
+            <p>Belum ada mata kuliah. Klik tombol di bawah untuk mulai.</p>
+        </div>
+
+        <div class="actions">
+            <button id="add-course-btn" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Tambah Mata Kuliah
+            </button>
+        </div>
+
+        <section id="result-summary" class="summary-card">
+            <div class="summary-item">
+                <span class="label">Total SKS</span>
+                <span class="value" id="total-sks">0</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item main-result">
+                <span class="label">Indeks Prestasi Semester (IPS)</span>
+                <span class="value" id="final-ips">0.00</span>
+            </div>
+        </section>
+    </div>
+
+    <!-- Template for Course Card -->
+    <template id="course-template">
+        <div class="course-card fade-in">
+            <div class="course-header">
+                <div class="input-group course-name-group">
+                    <input type="text" class="course-name" placeholder="Nama Mata Kuliah (ex: PBO)" required>
+                </div>
+                <div class="input-group sks-group">
+                    <label>SKS</label>
+                    <input type="number" class="course-sks" min="1" max="6" required>
+                </div>
+                <button class="btn-delete-course" title="Hapus Mata Kuliah">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="categories-section">
+                <div class="categories-header">
+                    <span>Kategori Penilaian</span>
+                    <span>Bobot (%)</span>
+                    <span>Nilai (0-100)</span>
+                    <span></span>
+                </div>
+                <div class="categories-list">
+                    <!-- Categories will be added here -->
+                </div>
+                <div class="categories-footer">
+                    <button class="btn-add-category">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Tambah Kategori
+                    </button>
+                    <div class="total-weight-display">Total Bobot: <span class="weight-val">0</span>%</div>
+                </div>
+            </div>
+
+            <div class="course-footer">
+                <div class="grade-preview">
+                    <div class="grade-detail">
+                        <span class="label">Nilai Akhir:</span>
+                        <span class="val course-final-score">-</span>
+                    </div>
+                    <div class="grade-detail">
+                        <span class="label">Huruf (Bobot):</span>
+                        <span class="val highlight course-letter-grade">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template for Category Row -->
+    <template id="category-template">
+        <div class="category-row slide-in">
+            <input type="text" class="cat-name" placeholder="ex: UTS">
+            <input type="number" class="cat-weight" min="0" max="100" placeholder="0">
+            <input type="number" class="cat-score" min="0" max="100" placeholder="0">
+            <button class="btn-delete-cat" title="Hapus Kategori">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
