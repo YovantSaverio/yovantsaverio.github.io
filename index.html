@@ -135,9 +135,18 @@
     <!-- Template for Category Row -->
     <template id="category-template">
         <div class="category-row slide-in">
-            <input type="text" class="cat-name" placeholder="ex: UTS">
-            <input type="number" class="cat-weight" min="0" max="100" placeholder="0-100%">
-            <input type="number" class="cat-score" min="0" max="100" placeholder="0-100">
+            <div class="cat-col-name">
+                <span class="mobile-label">Nama Kategori</span>
+                <input type="text" class="cat-name" placeholder="ex: UTS">
+            </div>
+            <div class="cat-col-weight">
+                <span class="mobile-label">Bobot (%)</span>
+                <input type="number" class="cat-weight" min="0" max="100" placeholder="0-100%">
+            </div>
+            <div class="cat-col-score">
+                <span class="mobile-label">Nilai (0-100)</span>
+                <input type="number" class="cat-score" min="0" max="100" placeholder="0-100">
+            </div>
             <button class="btn-delete-cat" title="Hapus Kategori">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
