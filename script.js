@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { min: 40, grade: 'D', point: 1.0 },
         { min: 0, grade: 'E', point: 0.0 }
     ];
-
     // --- State Management ---
     let appData = {
         activeProfileId: 'default',
