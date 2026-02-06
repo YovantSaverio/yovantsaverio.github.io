@@ -80,6 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateTotalIPS(); // Re-calculate summary whenever data saves (state changes)
     }
 
+    function migrateData() {
+        // Migration: Clear "Tugas" if it's the exact string in any category
+        // Only run this if we suspect old data exists. 
+        // We can just run it once on load.
+        let changed = false;
+        Object.values(appData.profiles).forEach(profile => {
+            profile.courses.forEach(course => {
+                course.categories.forEach(cat => {
+                    if (cat.name === 'Tugas') {
+                        cat.name = '';
+                        changed = true;
+                    }
+                });
+            });
+        });
+        if (changed) saveData();
+    }
+
     // --- Profile Management ---
     function getActiveProfile() {
         return appData.profiles[appData.activeProfileId];
@@ -341,4 +359,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Boot
     loadData();
+    migrateData();
 });
