@@ -591,7 +591,6 @@ input:focus {
         bottom: 15px;
         gap: 16px;
         flex-direction: row;
-        /* Keep row but condense */
         justify-content: space-between;
     }
 
